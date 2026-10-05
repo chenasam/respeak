@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-TW" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>日語極限默寫教練 · 龍櫻法 × 回音法</title>
+  <meta name="description" content="將日文日記轉化為 50~80 字高密度母體短文卡，搭配回音法語音訓練與白紙零容忍盲默審判。">
+  
+  <!-- Google Fonts: 日式明朝體、現代無襯線與等寬字型 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+JP:wght@400;500;700&family=Outfit:wght@400;500;600;700&family=Shippori+Mincho:wght@500;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="icon" type="image/jpeg" href="icon.jpg">
+  <link rel="apple-touch-icon" href="icon.jpg">
+  <link rel="stylesheet" href="style.css?v=20261005_1638">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- 頂部導航列 -->
+    <header class="app-header">
+      <div class="brand-section">
+        <div class="brand-logo">
+          <img src="icon.jpg" alt="Logo" class="brand-logo-img">
+        </div>
+        <div class="brand-info">
+          <h1>日語極限默寫教練 <span class="highlight">Echo Dictation</span></h1>
+          <div class="brand-tagline">
+            <span>龍櫻法 × 回音法</span>
+            <span>•</span>
+            <span class="badge badge-sakura">N4～N3 語法骨架</span>
+            <span>•</span>
+            <span class="badge badge-matcha">50～80 字高密度</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <button class="header-btn" id="btn-theme-toggle" title="切換明暗主題">
+          <span id="theme-icon">🌓</span> <span id="theme-text">深色</span>
+        </button>
+        <button class="header-btn" id="btn-open-settings" title="API 金鑰與語音設定">
+          <span>⚙️</span> 設定
+        </button>
+        <button class="header-btn" id="btn-print-sheet" title="一鍵列印 A4 白紙審判練習單">
+          <span>🖨️</span> 列印 A4 默寫單
+        </button>
+      </div>
+    </header>
+
+    <!-- 訓練階段 TAB 導航 -->
+    <nav class="training-steps-nav">
+      <div class="step-nav-item active" data-step="step-1">
+        <div class="step-num">1</div>
+        <div class="step-nav-content">
+          <span class="step-title">母體短文卡</span>
+          <span class="step-desc">日記輸入與 AI 改寫</span>
+        </div>
+      </div>
+      
+      <div class="step-nav-item" data-step="step-2">
+        <div class="step-num">2</div>
+        <div class="step-nav-content">
+          <span class="step-title">回音朗讀訓練</span>
+          <span class="step-desc">逐句跟讀 · 5~10遍</span>
+        </div>
+      </div>
+
+      <div class="step-nav-item" data-step="step-3">
+        <div class="step-num">3</div>
+        <div class="step-nav-content">
+          <span class="step-title">白紙審判</span>
+          <span class="step-desc">零容忍盲默 · 紅筆批改</span>
+        </div>
+      </div>
+
+      <div class="step-nav-item" data-step="step-4">
+        <div class="step-num">4</div>
+        <div class="step-nav-content">
+          <span class="step-title">滾雪球記憶庫</span>
+          <span class="step-desc">昨日卡片強制複習</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ====================================================================
+         STEP 1: 母體短文卡（日記輸入與 AI 結構化改寫）
+         ==================================================================== -->
+    <main id="step-1" class="step-pane active">
+      <div class="grid-2col">
+        
+        <!-- 左側：輸入原始日記 -->
+        <section class="card-panel">
+          <div class="panel-header">
+            <h2 class="panel-title"><span>✍️</span> 原始日常日記輸入</h2>
+            <span class="badge badge-indigo">N4~N3 改寫原料</span>
+          </div>
+
+          <div class="sample-pills">
+            <span style="font-size: 12px; color: var(--text-muted); align-self: center;">快速範例：</span>
+            <button class="pill-btn" data-sample="0">加班夜間超市</button>
+            <button class="pill-btn" data-sample="1">新企劃相談</button>
+            <button class="pill-btn" data-sample="2">週末老宅咖啡</button>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="input-original-draft">
+              <span>你的日文日記草稿（零散短句、て形串接亦可）</span>
+              <span id="draft-char-count" style="font-size: 11px; color: var(--text-muted);">0 字</span>
+            </label>
+            <textarea id="input-original-draft" class="textarea-custom" placeholder="例如：昨日は仕事がたくさんあって残業しました。疲れたからスーパーに行って、お弁当を買って帰りました。家に着いてからすぐ寝ました。"></textarea>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 16px;">
+            <button class="btn-primary" id="btn-generate-ai">
+              <span>⚡</span> 一鍵升級為【極限默寫專用卡】
+            </button>
+          </div>
+
+          <!-- 即時狀態與錯誤回報訊息框 -->
+          <div id="ai-generate-status" style="display: none; margin-top: 12px; padding: 12px 14px; border-radius: var(--radius-sm); font-size: 13px; line-height: 1.6;"></div>
+
+          <div style="margin-top: 14px; text-align: center;">
+            <button class="btn-secondary" id="btn-manual-parse-toggle" style="width: 100%; font-size: 12px;">
+              <span>📋</span> 手動貼入 / 編輯結構化卡片內容
+            </button>
+          </div>
+
+          <!-- 手動貼入面板 (可折疊) -->
+          <div id="manual-parse-box" style="display: none; margin-top: 16px; border-top: 1px dashed var(--border-subtle); padding-top: 14px;">
+            <label class="form-label" for="manual-paste-text">貼入 ChatGPT 或 Gemini 的四段輸出：</label>
+            <textarea id="manual-paste-text" class="textarea-custom" style="min-height: 90px;" placeholder="貼入含「母體短文」、「漢字讀音指引」、「中文原意對照」、「白紙審判重點」的文字..."></textarea>
+            <button class="btn-secondary" id="btn-apply-manual-parse" style="margin-top: 8px; width: 100%;">解析並載入卡片</button>
+          </div>
+        </section>
+
+        <!-- 右側：生成的母體短文卡 -->
+        <section class="card-panel">
+          <div class="panel-header">
+            <h2 class="panel-title"><span>🎴</span> 【極限默寫專用】母體短文卡</h2>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <span id="body-char-counter" class="char-counter-badge valid">75 字 (合格)</span>
+              <button class="header-btn" id="btn-save-snowball" title="儲存至記憶庫">💾 存入卡庫</button>
+            </div>
+          </div>
+
+          <div class="master-card-container">
+            <!-- 1. 母體短文 -->
+            <div>
+              <div class="form-label" style="margin-bottom: 6px;">
+                <span>1. 母體短文（50～80 字高密度正文，無括號假名）</span>
+                <button class="header-btn" id="btn-quick-play-body" style="padding: 2px 8px; font-size: 11px;">🔊 試聽</button>
+              </div>
+              <div class="master-body-box">
+                <p id="card-body-text" class="master-body-text">
+                  急な残業を終えた上で、閉店間際のスーパーへ寄り、割引シールの貼られた弁当を買って帰宅した。疲労がたまっていたため、風呂に入らずそのままベッドへ倒れ込んだ。
+                </p>
+              </div>
+            </div>
+
+            <!-- 2. 漢字讀音指引 -->
+            <div>
+              <div class="form-label" style="margin-bottom: 6px;">
+                <span>2. 漢字讀音指引（4～7 個音讀長促濁音 / 特殊訓讀 / 動詞幹）</span>
+                <span style="font-size: 11px; color: var(--text-muted);">點擊標籤可單獨發音</span>
+              </div>
+              <div id="card-kanji-guide" class="kanji-guide-grid">
+                <!-- 動態注入 kanji chip -->
+              </div>
+            </div>
+
+            <!-- 3. 中文原意對照 -->
+            <div>
+              <div class="form-label" style="margin-bottom: 4px;">3. 中文原意對照</div>
+              <p id="card-chinese-text" style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.7; background: var(--bg-input); padding: 12px 14px; border-radius: var(--radius-sm);">
+                在處理完突如其來的加班之後，我順道去了即將打烊的超市，買了貼有折扣貼紙的便當回家。因為累積了太多疲勞，連澡都沒洗就直接倒頭栽進了床鋪。
+              </p>
+            </div>
+
+            <!-- 4. 白紙審判重點 -->
+            <div>
+              <div class="form-label" style="margin-bottom: 4px;">4. 白紙審判重點（零容忍糾錯提示）</div>
+              <div class="trial-points-box">
+                <div class="trial-point-item">
+                  <span class="trial-point-label">助詞與固定搭配：</span>
+                  <span id="card-trial-particles">「残業を終えた上で」（～た上で 表示在...之後進行下一步）、「スーパーへ寄り」、「ベッドへ倒れ込んだ」。</span>
+                </div>
+                <div class="trial-point-item">
+                  <span class="trial-point-label">動詞活用與接續：</span>
+                  <span id="card-trial-conjugations">動詞接續：終えた（た形+上で）、貼られた（被動形）、入らず（書面中頓否定形）、倒れ込んだ（複合動詞）。</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 下一步動作按鈕 -->
+            <button class="btn-primary" id="btn-goto-step-2" style="margin-top: 8px;">
+              <span>🎧</span> 進入第二階段：回音朗讀訓練（5～10 遍）
+            </button>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- ====================================================================
+         STEP 2: 回音朗讀訓練（回音法專用播放器與逐句跟讀）
+         ==================================================================== -->
+    <main id="step-2" class="step-pane">
+      <div class="grid-2col">
+        
+        <!-- 左側：回音播音器主控台 -->
+        <section class="echo-player-card">
+          <div class="panel-header">
+            <h2 class="panel-title"><span>🎙️</span> 回音朗讀引擎 · Echo Player</h2>
+            <span class="badge badge-sakura" id="echo-mode-badge">回音停頓模式 ON</span>
+          </div>
+
+          <!-- 視覺化波形與狀態 -->
+          <div class="player-visualizer-container">
+            <div class="audio-waveform" id="audio-waveform">
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+            </div>
+            <div class="echo-status-text" id="echo-player-status">準備就緒，點擊播放開始回音跟讀</div>
+            <div class="echo-count-badge" id="echo-count-display">
+              目前朗讀：<strong id="echo-current-count">0</strong> / 10 遍（目標：5~10 遍抓準節奏）
+            </div>
+          </div>
+
+          <!-- 主控播放鍵列 -->
+          <div class="player-controls-row">
+            <button class="btn-circle-sub" id="btn-prev-sentence" title="上一句">⏮️</button>
+            <button class="btn-circle-play" id="btn-main-play" title="播放 / 暫停">▶️</button>
+            <button class="btn-circle-sub" id="btn-next-sentence" title="下一句">⏭️</button>
+            <button class="btn-circle-sub" id="btn-reset-counter" title="重置朗讀計數">🔄</button>
+          </div>
+
+          <!-- 播音參數控制列 -->
+          <div class="player-settings-bar">
+            <!-- 語速 -->
+            <div class="setting-item">
+              <span>語速：</span>
+              <div class="segmented-control" id="speed-segmented">
+                <button class="seg-btn" data-speed="0.8">0.8x (調性)</button>
+                <button class="seg-btn active" data-speed="1.0">1.0x (標準)</button>
+                <button class="seg-btn" data-speed="1.2">1.2x (母語)</button>
+              </div>
+            </div>
+
+            <!-- 音量增強 -->
+            <div class="setting-item">
+              <span>🔊 音量：</span>
+              <div class="segmented-control" id="volume-segmented">
+                <button class="seg-btn" data-volume="+60%">標準</button>
+                <button class="seg-btn active" data-volume="+100%">大聲 (+100%)</button>
+                <button class="seg-btn" data-volume="+150%">極限 (+150%)</button>
+              </div>
+            </div>
+
+            <!-- 回音停頓秒數 -->
+            <div class="setting-item">
+              <span>回音停頓：</span>
+              <div class="segmented-control" id="pause-segmented">
+                <button class="seg-btn" data-pause="0">無停頓</button>
+                <button class="seg-btn active" data-pause="2.5">2.5秒</button>
+                <button class="seg-btn" data-pause="4.0">4.0秒</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 發音語音選擇器 -->
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label class="form-label" for="voice-select">
+              <span>選擇日語發音引擎 (TTS Voice)</span>
+              <span style="font-size: 11px; color: var(--accent-sakura);">✨ 預設微軟神經語音 (大音量增強)</span>
+            </label>
+            <select id="voice-select" class="textarea-custom" style="min-height: 40px; padding: 8px 12px;"></select>
+          </div>
+
+          <!-- 語音下載與輔助工具 -->
+          <div style="display: flex; gap: 10px;">
+            <button class="btn-secondary" id="btn-export-audio" style="flex: 1;">
+              <span>💾</span> 下載日語音檔 (隨身聽)
+            </button>
+            <button class="btn-secondary" id="btn-toggle-mic" style="flex: 1;">
+              <span>🎤</span> 錄音跟讀自我比對
+            </button>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding: 0 4px; font-size: 11.5px;">
+            <a id="link-direct-audio" href="#" target="_blank" style="color: var(--accent-sakura); text-decoration: underline;" title="手機端若下載被阻擋，可直接在新分頁開啟音訊播放">
+              📱 iPhone / 手機直接在新分頁收聽與另存 ↗
+            </a>
+            <span style="color: var(--text-muted);" id="download-hint-text">
+              格式：YYYYMMDD_日文回音.mp3
+            </span>
+          </div>
+
+          <!-- 錄音播放器 (隱藏/展開) -->
+          <div id="mic-record-panel" style="display: none; margin-top: 14px; padding: 12px; background: var(--bg-input); border-radius: var(--radius-sm);">
+            <div style="font-size: 12px; margin-bottom: 6px; color: var(--accent-sakura);" id="mic-status-text">點擊下方開始錄音，朗讀短文後停止並回放：</div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <button class="header-btn" id="btn-start-record">🔴 開始錄音</button>
+              <button class="header-btn" id="btn-stop-record" disabled>⏹️ 停止</button>
+              <audio id="recorded-audio" controls style="height: 32px; flex: 1; display: none;"></audio>
+            </div>
+            <div id="mic-ios-note" style="display: none; margin-top: 8px; font-size: 11px; color: #f59e0b; line-height: 1.5; background: rgba(245, 158, 11, 0.1); padding: 8px 12px; border-radius: 6px; border: 1px dashed rgba(245, 158, 11, 0.3);">
+              💡 <strong>iPhone 系統提示</strong>：Apple iOS 安全機制限制非 HTTPS 網址啟用網頁麥克風。在 iPhone 上練習時，建議直接開啟 iPhone 內建的「<strong>語音備忘錄</strong>」App 進行錄音對照。
+            </div>
+          </div>
+        </section>
+
+        <!-- 右側：回音法 逐句清單 (Sentence by Sentence) -->
+        <section class="card-panel">
+          <div class="panel-header">
+            <h2 class="panel-title"><span>📜</span> 逐句回音跟讀清單</h2>
+            <span class="badge badge-gold">龍櫻法：音調與節奏</span>
+          </div>
+
+          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+            💡 <strong>回音法秘訣</strong>：聽完一句後，不要立刻開口！在安靜的 2～3 秒內，讓剛才的母語發音在腦海像回音般重新響起一次，再跟著出聲模擬音調（Accent）。
+          </p>
+
+          <div class="sentence-echo-list" id="sentence-echo-list">
+            <!-- 動態注入每句話 -->
+          </div>
+
+          <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-subtle);">
+            <button class="btn-primary" id="btn-goto-step-3">
+              <span>⚖️</span> 朗讀達標！前往第三階段：白紙審判（盲默測試）
+            </button>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- ====================================================================
+         STEP 3: 白紙審判（純白紙盲默 × 零容忍紅筆批改）
+         ==================================================================== -->
+    <main id="step-3" class="step-pane">
+      <div class="trial-arena">
+        
+        <!-- 白紙審判書寫區 -->
+        <div class="paper-sheet">
+          <div class="paper-header">
+            <span><strong>【白紙審判】盲默試卷</strong> · 提示已完全關閉，純憑大腦回音書寫</span>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <button class="header-btn" id="btn-trial-listen-hint" style="color: #475569; background: #f1f5f9;">
+                <span>👂</span> 聽一次語音提示
+              </button>
+              <span id="trial-word-counter">0 字</span>
+            </div>
+          </div>
+
+          <textarea id="trial-user-input" class="paper-input" placeholder="在純白紙上一字不差盲默全文...&#10;（遇生僻漢字可寫平假名；助詞、動詞變形與中頓接續不可有任何差錯）"></textarea>
+          
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; border-top: 1px solid #e2e8f0; padding-top: 12px;">
+            <span style="font-size: 12px; color: #64748b;">
+              ⚠️ 審判標準：零容忍檢測「が/を/に/で/は/へ/から/まで」等助詞與動詞活用變形。
+            </span>
+            <button class="btn-primary" id="btn-execute-judgment" style="width: auto; padding: 10px 24px;">
+              <span>⚖️</span> 進行白紙審判
+            </button>
+          </div>
+        </div>
+
+        <!-- 審判結果卡片 (預設隱藏，批改後彈出) -->
+        <div class="judgment-result-card" id="judgment-result-card">
+          <div class="judgment-header">
+            <div>
+              <h3 style="font-size: 18px; font-weight: 700;">紅筆審判報告</h3>
+              <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+                綠色：正確文字 | 紅色底線：助詞錯誤/漏字 | 刪除線：多餘字或變形偏差
+              </p>
+            </div>
+            <div class="score-badge score-perfect" id="judgment-score-badge">100% 合格</div>
+          </div>
+
+          <!-- 比對檢視器 -->
+          <div class="diff-comparison-box" id="judgment-diff-view">
+            <!-- 動態注入紅筆標記 -->
+          </div>
+
+          <!-- 錯誤摘要統計 -->
+          <div id="judgment-summary-stats" style="display: flex; gap: 16px; margin-bottom: 16px; font-size: 13px;">
+            <!-- 助詞錯誤數、變形錯誤數 -->
+          </div>
+
+          <!-- 強制覆寫工作區 (Forced Overwrite) -->
+          <div class="forced-overwrite-section" id="forced-overwrite-section">
+            <div class="overwrite-step-title">
+              <span>🩸</span> 龍櫻法【強制覆寫】訓練（凡寫錯句子，必須執行兩步修復）：
+            </div>
+            
+            <div style="font-size: 13px; line-height: 1.7; margin-bottom: 14px;">
+              1. <strong>大聲朗讀 3 遍</strong>：
+              <div id="overwrite-read-checklist" style="margin-top: 6px; display: flex; gap: 10px;">
+                <label><input type="checkbox" class="read-chk"> 朗讀第 1 遍</label>
+                <label><input type="checkbox" class="read-chk"> 朗讀第 2 遍</label>
+                <label><input type="checkbox" class="read-chk"> 朗讀第 3 遍</label>
+              </div>
+            </div>
+
+            <div style="font-size: 13px; line-height: 1.7;">
+              2. <strong>重新默寫 2 次</strong>（輸入下方確認無誤）：
+              <textarea id="overwrite-input-1" class="textarea-custom" style="min-height: 60px; margin-top: 6px; margin-bottom: 8px;" placeholder="第 1 次修正默寫..."></textarea>
+              <textarea id="overwrite-input-2" class="textarea-custom" style="min-height: 60px;" placeholder="第 2 次修正默寫..."></textarea>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+
+    <!-- ====================================================================
+         STEP 4: 滾雪球記憶庫（複習佇列與歷史存檔）
+         ==================================================================== -->
+    <main id="step-4" class="step-pane">
+      <div class="card-panel">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title"><span>❄️</span> 滾雪球複習庫（Snowball Archive）</h2>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+              「隔天在寫新短文前，必須先在白紙上盲默前一篇」—— 每日卡片自動存入，滾雪球建立語感。
+            </p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="header-btn" id="btn-export-snowball">📤 備份卡庫</button>
+            <button class="header-btn" id="btn-import-snowball">📥 匯入卡庫</button>
+            <input type="file" id="file-import-snowball" accept=".json" style="display: none;">
+          </div>
+        </div>
+
+        <div class="snowball-grid" id="snowball-grid">
+          <!-- 動態卡片清單 -->
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- ====================================================================
+       A4 列印專用排版（點擊列印時才會被印表機渲染）
+       ==================================================================== -->
+  <!-- ====================================================================
+       A4 列印專用排版（精準 2 頁式試卷：第 1 頁盲默試卷，第 2 頁審判覆寫）
+       ==================================================================== -->
+  <div class="print-only-sheet" id="print-sheet-area">
+    
+    <!-- PAGE 1: 白紙盲默實戰作答試卷 (無正解) -->
+    <div class="print-page print-page-1">
+      <div class="print-header">
+        <div class="print-title-group">
+          <h2 class="print-main-title">日語極限默寫練習單（龍櫻法 × 回音法）</h2>
+          <div class="print-sub-title">【第一階段：盲默實戰】N4～N3 語法骨架 · 助詞零容忍盲默測試</div>
+        </div>
+        <div class="print-meta-group">
+          <div class="print-meta-row"><strong>日期：</strong>____ 年 __ 月 __ 日</div>
+          <div class="print-meta-row"><strong>姓名：</strong>___________ &nbsp;<strong>得分：</strong>___/100</div>
+          <div class="print-meta-row"><strong>跟讀次數：</strong>[ &nbsp; ] 遍</div>
+        </div>
+      </div>
+
+      <!-- 1. 關鍵漢字讀音指引 -->
+      <div class="print-section">
+        <div class="print-section-title">
+          <span>一、 關鍵漢字讀音指引</span>
+          <span class="print-tip">（默寫前請先熟讀假名讀音與音訓重點）</span>
+        </div>
+        <div id="print-kanji-list" class="print-kanji-grid"></div>
+      </div>
+
+      <!-- 2. 中文原意對照提示 -->
+      <div class="print-section">
+        <div class="print-section-title">
+          <span>二、 中文原意提示</span>
+          <span class="print-tip">（根據母語語境在腦海重播回音，盲默還原日語短文）</span>
+        </div>
+        <div id="print-chinese-text" class="print-chinese-box"></div>
+      </div>
+
+      <!-- 3. 白紙盲默作答區 (200 格日式標準原稿用紙方格) -->
+      <div class="print-section" style="margin-bottom: 0;">
+        <div class="print-section-title">
+          <span>三、 白紙盲默作答區</span>
+          <span class="print-tip">（200 格標準原稿方格 · 限 50～80 字，促音拗音佔一格左下，標點符號佔一格）</span>
+        </div>
+        <div class="manuscript-container">
+          <div id="print-grid-cells-page1" class="manuscript-grid-200"><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div></div>
+          <div class="manuscript-scale">
+            <span>5</span>
+            <span>10</span>
+            <span>15</span>
+            <span>20 (字/行)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="print-footer-notice">
+        ※ 盲默完成後，請翻至第 2 頁進行【白紙審判】紅筆批改與二次強制覆寫訂正。
+      </div>
+    </div>
+
+    <!-- PAGE 2: 白紙審判標準與二次覆寫強化單 -->
+    <div class="print-page print-page-2">
+      <div class="print-header print-header-p2">
+        <div class="print-title-group">
+          <h2 class="print-main-title">【白紙審判】核對標準與二次覆寫強化單</h2>
+          <div class="print-sub-title">【第二階段：核對審判與覆寫強化】零容忍檢視 · 錯一個助詞立即全盤重寫</div>
+        </div>
+        <div class="print-meta-group">
+          <div class="print-meta-row"><strong>審判批改人：</strong>___________</div>
+          <div class="print-meta-row"><strong>二次覆寫得分：</strong>___/100</div>
+        </div>
+      </div>
+
+      <!-- 4. 白紙審判重點檢視 -->
+      <div class="print-section">
+        <div class="print-section-title">
+          <span>四、 白紙審判重點檢視</span>
+          <span class="print-tip">（請用紅筆圈出錯誤助詞與未正確活用的動詞變形）</span>
+        </div>
+        <div id="print-trial-points" class="print-trial-box"></div>
+      </div>
+
+      <!-- 5. 標準母體短文（正解全文對照） -->
+      <div class="print-section">
+        <div class="print-section-title">
+          <span>五、 標準母體短文（正解全文）</span>
+        </div>
+        <div id="print-master-body" class="print-master-text"></div>
+      </div>
+
+      <!-- 6. 龍櫻法 · 零容忍二次強制覆寫區 (2 次各 80 格原稿方格) -->
+      <div class="print-section" style="margin-bottom: 0;">
+        <div class="print-section-title">
+          <span>六、 龍櫻法 · 零容忍二次強制覆寫區</span>
+          <span class="print-tip">（若初次默寫有誤，必須遮住正解重新完整覆寫兩次）</span>
+        </div>
+        
+        <!-- 覆寫 1 -->
+        <div class="rewrite-block">
+          <div class="rewrite-label">【第 1 次修正覆寫】（核對正解後，遮住答案重新默寫一遍 · 120 格充裕方格）：</div>
+          <div class="manuscript-container">
+            <div id="print-rewrite-grid-1" class="manuscript-grid-120"><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div></div>
+            <div class="manuscript-scale">
+              <span>5</span>
+              <span>10</span>
+              <span>15</span>
+              <span>20 (字/行 · 寬裕容納 50~80 字與標點換行)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 覆寫 2 -->
+        <div class="rewrite-block" style="margin-top: 8px;">
+          <div class="rewrite-label">【第 2 次終極覆寫】（一字不差完美默寫，形成真正肌肉記憶 · 120 格充裕方格）：</div>
+          <div class="manuscript-container">
+            <div id="print-rewrite-grid-2" class="manuscript-grid-120"><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div><div class="manuscript-cell"></div></div>
+            <div class="manuscript-scale">
+              <span>5</span>
+              <span>10</span>
+              <span>15</span>
+              <span>20 (字/行 · 寬裕容納 50~80 字與標點換行)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="print-quote">
+        「只要語法骨架與助詞在白紙上一字不差，大腦就能形成真正的日語反射神經！」—— 龍櫻極限默寫法
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ====================================================================
+       設定彈出視窗（Gemini API Key、TTS 設定）
+       ==================================================================== -->
+  <div class="modal-overlay" id="modal-settings">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 style="font-size: 17px; font-weight: 700;">⚙️ 系統設定 · API & 語音</h3>
+        <button class="modal-close-btn" id="btn-close-settings">&times;</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="setting-gemini-key">
+          <span>Gemini API Key（用以自動改寫日記）</span>
+          <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--accent-sakura); font-size: 11px;">取得免費金鑰 ↗</a>
+        </label>
+        <input type="password" id="setting-gemini-key" class="textarea-custom" style="min-height: 40px; padding: 8px 12px;" placeholder="AIzaSy...">
+        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+          🔒 金鑰僅儲存在您的瀏覽器本機端（LocalStorage），絕不上傳第三方伺服器。
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <label class="form-label" for="setting-gemini-model" style="margin-bottom: 0;">Gemini 模型型號</label>
+          <button type="button" class="header-btn" id="btn-test-api-key" style="font-size: 11px; padding: 3px 10px;">
+            <span>🔍</span> 測試 API 連線
+          </button>
+        </div>
+        <select id="setting-gemini-model" class="textarea-custom" style="min-height: 40px; padding: 8px 12px;">
+          <option value="gemini-3.8-flash">gemini-3.8-flash (官方指定最新 · 推薦)</option>
+          <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+          <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+        </select>
+        <div id="api-test-status" style="display: none; margin-top: 8px; font-size: 12px; padding: 8px 12px; border-radius: var(--radius-sm);"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="setting-voice-pitch">語音音調 (Pitch: 0.8 ~ 1.2)</label>
+        <input type="range" id="setting-voice-pitch" min="0.8" max="1.2" step="0.05" value="1.0" style="width: 100%;">
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+        <button class="btn-secondary" id="btn-cancel-settings">取消</button>
+        <button class="btn-primary" id="btn-save-settings" style="width: auto; padding: 10px 24px;">儲存設定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 引用範例資料庫與核心腳本 -->
+  <script src="sample-cards.js?v=20261005_1638"></script>
+  <script src="app.js?v=20261005_1638"></script>
+</body>
+</html>

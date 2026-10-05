@@ -1,0 +1,1295 @@
+/* ==========================================================================
+   日語極限默寫教練（龍櫻法 × 回音法）- 現代視覺設計系統
+   ========================================================================== */
+
+:root {
+  --bg-primary: #0b0f19;
+  --bg-secondary: #121826;
+  --bg-card: rgba(22, 30, 49, 0.75);
+  --bg-card-hover: rgba(30, 41, 67, 0.85);
+  --bg-input: #1a2336;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-focus: #f43f5e;
+  --border-accent: rgba(244, 63, 94, 0.35);
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  --accent-sakura: #fb7185;
+  --accent-vermilion: #e11d48;
+  --accent-gold: #f59e0b;
+  --accent-matcha: #10b981;
+  --accent-indigo: #6366f1;
+  --accent-blue: #38bdf8;
+
+  --diff-correct: #10b981;
+  --diff-missing: #ef4444;
+  --diff-extra: #f97316;
+  --diff-particle: #f43f5e;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 24px rgba(244, 63, 94, 0.25);
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  --font-sans: 'Outfit', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: 'Shippori Mincho', 'Noto Serif JP', "Songti TC", serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 亮色紙質模式 (可切換) */
+[data-theme="light"] {
+  --bg-primary: #f8f6f0;
+  --bg-secondary: #ede8df;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-card-hover: #ffffff;
+  --bg-input: #ffffff;
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-focus: #e11d48;
+  --border-accent: rgba(225, 29, 72, 0.3);
+
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.12);
+  --shadow-glow: 0 0 20px rgba(225, 29, 72, 0.15);
+}
+
+/* 全域重設與平滑渲染 */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(ellipse at 15% 10%, rgba(244, 63, 94, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 90%, rgba(99, 102, 241, 0.08) 0%, transparent 50%);
+  background-attachment: fixed;
+}
+
+/* 容器佈局 */
+.app-container {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 24px 20px 80px 20px;
+}
+
+/* Header 頂部列 */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-sm);
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.brand-logo {
+  width: 46px;
+  height: 46px;
+  background: linear-gradient(135deg, #e11d48, #fb7185);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.35);
+  overflow: hidden;
+}
+
+.brand-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.brand-info h1 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-info h1 span.highlight {
+  background: linear-gradient(90deg, #fb7185, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.brand-tagline {
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: flex;
+  gap: 12px;
+  margin-top: 2px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.header-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-focus);
+  transform: translateY(-1px);
+}
+
+/* 訓練階段導航 TAB */
+.training-steps-nav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.step-nav-item {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.step-nav-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: transparent;
+  transition: var(--transition-fast);
+}
+
+.step-nav-item:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.step-nav-item.active {
+  background: var(--bg-card-hover);
+  border-color: var(--accent-sakura);
+  box-shadow: var(--shadow-glow);
+}
+
+.step-nav-item.active::before {
+  background: var(--accent-sakura);
+}
+
+.step-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-input);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.step-nav-item.active .step-num {
+  background: var(--accent-vermilion);
+  color: #fff;
+}
+
+.step-nav-content .step-title {
+  font-size: 14px;
+  font-weight: 700;
+  display: block;
+}
+
+.step-nav-content .step-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: block;
+}
+
+/* 核心內容區塊 */
+.step-pane {
+  display: none;
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.step-pane.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 網格雙欄架構 */
+.grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* 卡片面板設計 */
+.card-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.panel-title {
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.badge-sakura { background: rgba(251, 113, 133, 0.15); color: var(--accent-sakura); border: 1px solid rgba(251, 113, 133, 0.3); }
+.badge-gold { background: rgba(245, 158, 11, 0.15); color: var(--accent-gold); border: 1px solid rgba(245, 158, 11, 0.3); }
+.badge-matcha { background: rgba(16, 185, 129, 0.15); color: var(--accent-matcha); border: 1px solid rgba(16, 185, 129, 0.3); }
+.badge-indigo { background: rgba(99, 102, 241, 0.15); color: var(--accent-indigo); border: 1px solid rgba(99, 102, 241, 0.3); }
+
+/* 表單與輸入區域 */
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.textarea-custom {
+  width: 100%;
+  min-height: 120px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.7;
+  resize: vertical;
+  transition: var(--transition-fast);
+}
+
+.textarea-custom:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.15);
+}
+
+.sample-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.pill-btn {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.pill-btn:hover {
+  border-color: var(--accent-sakura);
+  color: var(--text-primary);
+  background: rgba(251, 113, 133, 0.1);
+}
+
+/* 操作按鈕組 */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #e11d48, #f43f5e);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 12px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(225, 29, 72, 0.35);
+  transition: var(--transition-fast);
+  width: 100%;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(225, 29, 72, 0.5);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--accent-sakura);
+}
+
+/* 母體短文展示卡（日式明朝體 + 乾淨排版） */
+.master-card-container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.master-body-box {
+  background: var(--bg-input);
+  border: 1px solid rgba(251, 113, 133, 0.25);
+  border-radius: var(--radius-md);
+  padding: 20px 22px;
+  position: relative;
+}
+
+.master-body-text {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  line-height: 1.9;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+.char-counter-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--text-muted);
+}
+
+.char-counter-badge.valid {
+  background: rgba(16, 185, 129, 0.2);
+  color: var(--accent-matcha);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+/* 漢字讀音指引卡片清單 */
+.kanji-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+.kanji-chip {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  position: relative;
+}
+
+.kanji-chip:hover {
+  border-color: var(--accent-sakura);
+  transform: translateY(-2px);
+  background: rgba(251, 113, 133, 0.08);
+}
+
+.kanji-chip .chip-kanji {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent-sakura);
+}
+
+.kanji-chip .chip-kana {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.kanji-chip .chip-note {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* 白紙審判重點 Box */
+.trial-points-box {
+  background: rgba(245, 158, 11, 0.06);
+  border: 1px dashed rgba(245, 158, 11, 0.35);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.trial-point-item {
+  margin-bottom: 8px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.trial-point-item:last-child {
+  margin-bottom: 0;
+}
+
+.trial-point-label {
+  font-weight: 700;
+  color: var(--accent-gold);
+  display: inline-block;
+  margin-right: 6px;
+}
+
+/* ==========================================================================
+   回音音訊播放器專用樣式 (STEP 2)
+   ========================================================================== */
+
+.echo-player-card {
+  background: linear-gradient(180deg, rgba(22, 30, 49, 0.9) 0%, rgba(14, 19, 31, 0.95) 100%);
+  border: 1px solid rgba(251, 113, 133, 0.25);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-lg);
+}
+
+.player-visualizer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+  background: radial-gradient(circle at center, rgba(251, 113, 133, 0.12) 0%, transparent 70%);
+  border-radius: var(--radius-md);
+  margin-bottom: 24px;
+  position: relative;
+}
+
+/* 波形動態音柱 */
+.audio-waveform {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 48px;
+  margin-bottom: 16px;
+}
+
+.wave-bar {
+  width: 5px;
+  height: 12px;
+  background: var(--accent-sakura);
+  border-radius: var(--radius-full);
+  transition: height 0.1s ease;
+}
+
+.audio-waveform.playing .wave-bar:nth-child(1) { animation: wave 1s infinite ease-in-out 0.1s; }
+.audio-waveform.playing .wave-bar:nth-child(2) { animation: wave 1s infinite ease-in-out 0.25s; }
+.audio-waveform.playing .wave-bar:nth-child(3) { animation: wave 1s infinite ease-in-out 0.15s; }
+.audio-waveform.playing .wave-bar:nth-child(4) { animation: wave 1s infinite ease-in-out 0.4s; }
+.audio-waveform.playing .wave-bar:nth-child(5) { animation: wave 1s infinite ease-in-out 0.3s; }
+.audio-waveform.playing .wave-bar:nth-child(6) { animation: wave 1s infinite ease-in-out 0.2s; }
+.audio-waveform.playing .wave-bar:nth-child(7) { animation: wave 1s infinite ease-in-out 0.35s; }
+
+@keyframes wave {
+  0%, 100% { height: 10px; }
+  50% { height: 42px; background: #f43f5e; }
+}
+
+.echo-status-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+}
+
+.echo-count-badge {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--accent-gold);
+}
+
+/* 播放主控制列 */
+.player-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.btn-circle-play {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e11d48, #fb7185);
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(225, 29, 72, 0.45);
+  transition: var(--transition-fast);
+}
+
+.btn-circle-play:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 26px rgba(225, 29, 72, 0.6);
+}
+
+.btn-circle-sub {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-circle-sub:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-sakura);
+  transform: scale(1.05);
+}
+
+/* 播放器選項調整（語速、停頓） */
+.player-settings-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-input);
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  margin-bottom: 24px;
+}
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.segmented-control {
+  display: flex;
+  background: var(--bg-secondary);
+  padding: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.seg-btn {
+  background: transparent;
+  border: none;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.seg-btn.active {
+  background: var(--accent-sakura);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* 回音法逐句清單 */
+.sentence-echo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sentence-echo-item {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  transition: var(--transition-fast);
+}
+
+.sentence-echo-item.speaking {
+  border-color: var(--accent-sakura);
+  background: rgba(251, 113, 133, 0.08);
+  box-shadow: 0 0 16px rgba(251, 113, 133, 0.15);
+}
+
+.sentence-text {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.sentence-btn-play {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: var(--transition-fast);
+}
+
+.sentence-btn-play:hover {
+  background: var(--accent-sakura);
+  color: #fff;
+  border-color: var(--accent-sakura);
+}
+
+/* ==========================================================================
+   白紙審判專用樣式 (STEP 3)
+   ========================================================================== */
+
+.trial-arena {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.paper-sheet {
+  background: #ffffff;
+  color: #1e293b;
+  border-radius: var(--radius-md);
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  position: relative;
+  border: 1px solid #e2e8f0;
+  background-image: 
+    linear-gradient(#f1f5f9 1px, transparent 1px);
+  background-size: 100% 32px;
+}
+
+.paper-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #cbd5e1;
+  padding-bottom: 8px;
+}
+
+.paper-input {
+  width: 100%;
+  min-height: 180px;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-serif);
+  font-size: 19px;
+  line-height: 32px;
+  color: #0f172a;
+  resize: vertical;
+}
+
+.paper-input::placeholder {
+  color: #94a3b8;
+  font-family: var(--font-sans);
+  font-size: 15px;
+}
+
+/* 審判比對結果卡 */
+.judgment-result-card {
+  display: none;
+  margin-top: 20px;
+  background: var(--bg-card);
+  border: 2px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+.judgment-result-card.show {
+  display: block;
+  animation: fadeIn 0.4s ease;
+}
+
+.judgment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.score-badge {
+  font-size: 20px;
+  font-weight: 800;
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+}
+
+.score-perfect { background: rgba(16, 185, 129, 0.2); color: var(--accent-matcha); border: 1px solid var(--accent-matcha); }
+.score-warning { background: rgba(245, 158, 11, 0.2); color: var(--accent-gold); border: 1px solid var(--accent-gold); }
+.score-danger { background: rgba(225, 29, 72, 0.2); color: var(--accent-sakura); border: 1px solid var(--accent-sakura); }
+
+/* 紅筆審判比對區 */
+.diff-comparison-box {
+  background: var(--bg-input);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: 18px;
+  font-family: var(--font-serif);
+  font-size: 18px;
+  line-height: 2;
+  word-break: break-all;
+}
+
+.diff-char-correct {
+  color: var(--diff-correct);
+}
+
+.diff-char-wrong {
+  background: rgba(239, 68, 68, 0.25);
+  color: #fca5a5;
+  text-decoration: line-through;
+  padding: 1px 3px;
+  border-radius: 3px;
+  margin: 0 1px;
+}
+
+.diff-char-expected {
+  background: rgba(16, 185, 129, 0.25);
+  color: #6ee7b7;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 3px;
+  margin: 0 1px;
+}
+
+.diff-particle-highlight {
+  border-bottom: 2px solid var(--accent-sakura);
+  font-weight: 700;
+  color: var(--accent-sakura);
+}
+
+/* 強制覆寫工作區 (Forced Overwrite) */
+.forced-overwrite-section {
+  background: rgba(225, 29, 72, 0.08);
+  border: 1px solid rgba(225, 29, 72, 0.3);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  margin-top: 16px;
+}
+
+.overwrite-step-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent-sakura);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 歷史卡庫與滾雪球 (STEP 4) */
+.snowball-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.snowball-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.snowball-card:hover {
+  border-color: var(--accent-sakura);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.snowball-card.yesterday-highlight {
+  border: 2px solid var(--accent-gold);
+  background: rgba(245, 158, 11, 0.05);
+}
+
+/* 彈出視窗 Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.open {
+  display: flex;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-content {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  max-width: 580px;
+  width: 100%;
+  padding: 28px;
+  box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.modal-close-btn:hover {
+  color: var(--text-primary);
+}
+
+/* ==========================================================================
+   A4 白紙審判專用列印排版 (Print Media - 精準 2 頁式試卷)
+   ========================================================================== */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 8mm 12mm 8mm 12mm;
+  }
+
+  html, body {
+    background: #fff !important;
+    color: #111 !important;
+    font-family: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", "Microsoft JhengHei", serif !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    font-size: 10pt !important;
+    line-height: 1.4 !important;
+  }
+
+  /* 徹底隱藏網頁端所有互動介面元素，絕不溢出到紙面 */
+  .app-container,
+  .app-header,
+  .training-steps-nav,
+  .step-pane,
+  .modal-overlay,
+  button,
+  header,
+  nav,
+  footer,
+  #modal-settings {
+    display: none !important;
+  }
+
+  /* 顯示專用列印學習單 */
+  .print-only-sheet {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .print-page {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    background: #fff !important;
+    color: #111 !important;
+    padding: 0 !important;
+  }
+
+  /* 第 1 頁與第 2 頁精準分頁控制 */
+  .print-page-1 {
+    page-break-before: auto !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    max-height: 275mm !important;
+    overflow: hidden !important;
+  }
+
+  .print-page-2 {
+    page-break-before: always !important;
+    break-before: page !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    max-height: 275mm !important;
+    overflow: hidden !important;
+  }
+
+  /* 頁首標題樣式 */
+  .print-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-end !important;
+    border-bottom: 2px solid #111 !important;
+    padding-bottom: 5px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .print-header-p2 {
+    border-bottom-color: #991b1b !important;
+  }
+
+  .print-main-title {
+    font-size: 14pt !important;
+    font-weight: 800 !important;
+    color: #111 !important;
+    margin: 0 !important;
+    letter-spacing: 0.04em !important;
+  }
+
+  .print-header-p2 .print-main-title {
+    color: #991b1b !important;
+  }
+
+  .print-sub-title {
+    font-size: 8.5pt !important;
+    color: #555 !important;
+    margin-top: 2px !important;
+  }
+
+  .print-meta-group {
+    font-size: 8.5pt !important;
+    text-align: right !important;
+    line-height: 1.4 !important;
+  }
+
+  .print-meta-row {
+    white-space: nowrap !important;
+  }
+
+  /* 區塊標題 */
+  .print-section {
+    margin-bottom: 7px !important;
+  }
+
+  .print-section-title {
+    font-size: 9.5pt !important;
+    font-weight: 700 !important;
+    margin-bottom: 3px !important;
+    display: flex !important;
+    align-items: baseline !important;
+    gap: 6px !important;
+  }
+
+  .print-tip {
+    font-size: 7.5pt !important;
+    font-weight: 400 !important;
+    color: #666 !important;
+  }
+
+  /* 漢字讀音指引晶片 */
+  .print-kanji-grid {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 4px 10px !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+    padding: 5px 8px !important;
+    background: #fafafa !important;
+    font-size: 8.5pt !important;
+  }
+
+  .print-kanji-item {
+    display: inline-flex !important;
+    align-items: baseline !important;
+    gap: 4px !important;
+  }
+
+  .print-kanji-item strong {
+    font-size: 10pt !important;
+    color: #000 !important;
+  }
+
+  .print-kanji-item .print-kana {
+    font-size: 8pt !important;
+    color: #c2410c !important;
+  }
+
+  /* 中文原意提示框 */
+  .print-chinese-box {
+    border: 1px solid #ccc !important;
+    border-left: 3px solid #6366f1 !important;
+    border-radius: 4px !important;
+    padding: 5px 8px !important;
+    font-size: 9pt !important;
+    line-height: 1.45 !important;
+    background: #fbfbfe !important;
+    color: #333 !important;
+  }
+
+  /* 原稿用紙方格容器 (20 列) */
+  .manuscript-container {
+    margin: 3px 0 !important;
+  }
+
+  /* 200 格 (10 行 x 20 列) */
+  .manuscript-grid-200 {
+    display: grid !important;
+    grid-template-columns: repeat(20, 1fr) !important;
+    grid-template-rows: repeat(10, 22px) !important;
+    border-top: 1.5px solid #222 !important;
+    border-left: 1.5px solid #222 !important;
+    border-right: 1.5px solid #222 !important;
+    border-bottom: 1.5px solid #222 !important;
+    background: #fff !important;
+  }
+
+  /* 120 格 (6 行 x 20 列 · 充裕容納 50~80 字正文與標點符號換行) */
+  .manuscript-grid-120 {
+    display: grid !important;
+    grid-template-columns: repeat(20, 1fr) !important;
+    grid-template-rows: repeat(6, 21.5px) !important;
+    border-top: 1.5px solid #333 !important;
+    border-left: 1.5px solid #333 !important;
+    border-right: 1.5px solid #333 !important;
+    border-bottom: 1.5px solid #333 !important;
+    background: #fff !important;
+  }
+
+  .manuscript-cell {
+    border-right: 0.5px solid #b5b5b5 !important;
+    border-bottom: 0.5px solid #b5b5b5 !important;
+    box-sizing: border-box !important;
+  }
+
+  .manuscript-cell:nth-child(20n) {
+    border-right: none !important;
+  }
+
+  .manuscript-scale {
+    display: flex !important;
+    justify-content: space-between !important;
+    font-size: 7pt !important;
+    color: #888 !important;
+    padding: 1px 4px !important;
+  }
+
+  .print-footer-notice {
+    font-size: 8pt !important;
+    color: #666 !important;
+    text-align: center !important;
+    margin-top: 6px !important;
+    border-top: 1px dashed #ccc !important;
+    padding-top: 3px !important;
+  }
+
+  /* 第 2 頁審判重點 */
+  .print-trial-box {
+    border: 1px solid #fca5a5 !important;
+    border-left: 3.5px solid #dc2626 !important;
+    background: #fff5f5 !important;
+    padding: 5px 8px !important;
+    border-radius: 4px !important;
+    font-size: 8.5pt !important;
+    line-height: 1.45 !important;
+  }
+
+  .print-trial-row {
+    margin-bottom: 2px !important;
+  }
+  .print-trial-row:last-child {
+    margin-bottom: 0 !important;
+  }
+
+  .print-trial-label {
+    font-weight: 700 !important;
+    color: #991b1b !important;
+  }
+
+  /* 第 2 頁正解全文 */
+  .print-master-text {
+    border: 1px solid #cbd5e1 !important;
+    border-left: 3.5px solid #059669 !important;
+    background: #f0fdf4 !important;
+    padding: 6px 10px !important;
+    border-radius: 4px !important;
+    font-size: 10.5pt !important;
+    font-weight: 600 !important;
+    line-height: 1.6 !important;
+    color: #0f172a !important;
+    letter-spacing: 0.03em !important;
+  }
+
+  .rewrite-label {
+    font-size: 8pt !important;
+    font-weight: 700 !important;
+    color: #334155 !important;
+    margin-bottom: 2px !important;
+  }
+
+  .print-quote {
+    font-size: 7.5pt !important;
+    color: #777 !important;
+    text-align: center !important;
+    margin-top: 6px !important;
+    font-style: italic !important;
+    border-top: 1px dotted #ccc !important;
+    padding-top: 3px !important;
+  }
+}
+
+.print-only-sheet {
+  display: none;
+}
+
+/* 響應式調整 */
+@media (max-width: 900px) {
+  .grid-2col {
+    grid-template-columns: 1fr;
+  }
+  .training-steps-nav {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .training-steps-nav {
+    grid-template-columns: 1fr;
+  }
+  .app-header {
+    flex-direction: column;
+    gap: 14px;
+    align-items: flex-start;
+  }
+}
